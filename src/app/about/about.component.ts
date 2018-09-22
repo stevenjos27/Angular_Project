@@ -14,13 +14,15 @@ import { Location } from '@angular/common';
 })
 export class AboutComponent implements OnInit {
   leaders: Leader[];
+  leaderErrMess: string;
 
   constructor( private leaderservice: LeaderService
   ) { }
 
   ngOnInit() {
     this.leaderservice.getLeaders()
-    .subscribe(leaders => this.leaders = leaders);
+    .subscribe(leaders => this.leaders = leaders,
+      errMess => this.leaderErrMess = <any>errMess.message);
   }
 
 }

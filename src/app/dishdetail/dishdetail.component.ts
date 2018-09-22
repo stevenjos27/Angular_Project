@@ -52,12 +52,12 @@ export class DishdetailComponent implements OnInit {
     ngOnInit() {
         this.dishservice.getDishIds().subscribe(dishIds =>
             this.dishIds = dishIds,
-            errMess => this.errMess = <any>errMess);
+            errMess => this.errMess = <any>errMess.message);
 
         this.route.params.pipe(switchMap((params: Params) =>
             this.dishservice.getDish(+params['id'])))
             .subscribe(dish => { this.dish = dish; this.setPrevNext(dish.id); },
-            errMess => this.errMess = <any>errMess);
+            errMess => this.errMess = <any>errMess.message);
     }
 
     setPrevNext(dishId: number) {
