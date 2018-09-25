@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ViewChild, Inject } from '@angular/core';
 import { Dish } from '../shared/dish';
 import { DishService } from '../services/dish.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 import { Params, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
@@ -10,7 +11,20 @@ import { switchMap } from 'rxjs/operators';
 @Component({
     selector: 'app-dishdetail',
     templateUrl: './dishdetail.component.html',
-    styleUrls: ['./dishdetail.component.scss']
+    styleUrls: ['./dishdetail.component.scss'],
+    animations: [
+        trigger('visibility', [
+            state('shown', style({
+                transform: 'scale(1.0)',
+                opacity: 1
+            })),
+            state('hidden', style({
+                transform: 'scale(.5)',
+                opacity: 0
+            })),
+            transition('* => *', animate('0.5s ease-in-out'))
+        ])
+    ]
 })
 export class DishdetailComponent implements OnInit {
 
@@ -19,6 +33,7 @@ export class DishdetailComponent implements OnInit {
     commentForm: FormGroup;
     newComment: any;
     errMess: string;
+    visibility = 'shown';
 
     formErrors = {
         'author': '',
@@ -56,8 +71,14 @@ export class DishdetailComponent implements OnInit {
             errMess => this.errMess = <any>errMess.message);
 
             this.route.params.pipe(
-            switchMap((params: Params) => this.dishservice.getDish(+params['id'])))
-            .subscribe(dish => { this.dish = dish; this.dishcopy = dish; this.setPrevNext(dish.id); },
+            switchMap((params: Params) => { this.visibility = 'hidden';
+                return this.dishservice.getDish(+params['id']); }))
+            .subscribe(dish => {
+                this.dish = dish;
+                this.dishcopy = dish;
+                this.setPrevNext(dish.id);
+                this.visibility = 'shown';
+            },
                 errmess => { this.dish = null; this.errMess = <any>errmess; });
     }
 
